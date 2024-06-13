@@ -11,12 +11,12 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { CreateUserDto } from '../dtos/create-user.dto';
-import { UpdateUserDto } from '../dtos/update-user.dto';
 import { UserService } from 'src/services/user.service';
 import { ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { UserEntity } from 'src/entities/user.entity';
 import { plainToInstance } from 'class-transformer';
 import { AuthGuard } from 'src/common/guards/auth.guard';
+import { UpdateUserDto } from 'src/dtos/update-user.dto';
 
 @Controller('user')
 export class UserController {

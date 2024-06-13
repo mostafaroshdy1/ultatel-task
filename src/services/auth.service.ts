@@ -2,8 +2,10 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UserService } from 'src/services/user.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
-import { SignInDto } from 'src/dtos/signIn-dto';
 import { User } from 'src/models/user.model';
+import { SignInDto } from 'src/dtos/signIn-dto';
+import { RefreshTokenDto } from 'src/dtos/refresh-token.dto';
+import { SignInResponseDto } from 'src/dtos/sign-in-response.dto';
 
 @Injectable()
 export class AuthService {
@@ -27,9 +29,9 @@ export class AuthService {
     return this.createJwtTokens(foundUser);
   }
 
-  async refreshToken(
-    refreshToken: string,
-  ): Promise<{ access_token: string; refresh_token: string }> {
+  async refreshToken({
+    refreshToken,
+  }: RefreshTokenDto): Promise<SignInResponseDto> {
     try {
       const payload = this.jwtService.verify(refreshToken);
       const foundUser = await this.userService.findOne(payload.id); // To check if the user still exists incase it was deleted
@@ -42,9 +44,7 @@ export class AuthService {
     }
   }
 
-  async createJwtTokens(
-    user: User,
-  ): Promise<{ access_token: string; refresh_token: string }> {
+  async createJwtTokens(user: User): Promise<SignInResponseDto> {
     const payload = { id: user.id, email: user.email }; // To exclude any sensitive information
 
     const [access_token, refresh_token] = await Promise.all([

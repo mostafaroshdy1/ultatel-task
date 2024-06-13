@@ -8,6 +8,7 @@ import { UserModule } from './modules/user.module';
 import { dataSourceOptions } from './db/data-source'; // Import dataSourceOptions from your custom data source file
 import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './modules/auth.module';
+import { StudentModule } from './student/student.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { AuthModule } from './modules/auth.module';
     TypeOrmModule.forRoot(dataSourceOptions),
     UserModule,
     AuthModule,
+    StudentModule,
   ],
   controllers: [AppController],
   providers: [AppService],

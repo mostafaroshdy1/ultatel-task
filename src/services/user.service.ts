@@ -5,7 +5,6 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { CreateUserDto } from '../dtos/create-user.dto';
-import { UpdateUserDto } from '../dtos/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FindManyOptions, FindOneOptions } from 'typeorm';
 import { UserRepository } from 'src/repositories/user.repository';
@@ -13,6 +12,7 @@ import { BaseAbstractRepository } from 'src/repositories/base/base.abstract.repo
 import * as bcrypt from 'bcrypt';
 import { User } from 'src/models/user.model';
 import { UserEntity } from 'src/entities/user.entity';
+import { UpdateUserDto } from 'src/dtos/update-user.dto';
 
 @Injectable()
 export class UserService {
