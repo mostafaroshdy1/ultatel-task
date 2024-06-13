@@ -10,6 +10,7 @@ import { BaseInterfaceRepository } from './base.interface.repository';
 
 interface HasId {
   id: number;
+  email: string;
 }
 
 export abstract class BaseAbstractRepository<T extends HasId>

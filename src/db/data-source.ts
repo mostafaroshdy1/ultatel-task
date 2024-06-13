@@ -11,7 +11,7 @@ export const dataSourceOptions: DataSourceOptions = {
   database: 'ultatel-Mostafa-Roshdy',
   entities: [__dirname + '/../**/*.entity{.ts,.js}'],
   synchronize: process.env.NODE_ENV !== 'production', // Sync only in non-production environments
-  logging: true,
+  // logging: true,
 };
 
 const dataSource = new DataSource(dataSourceOptions);

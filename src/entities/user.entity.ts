@@ -1,32 +1,24 @@
 import { Entity, Column, PrimaryGeneratedColumn, Unique } from 'typeorm';
 import { Gender, User } from 'src/models/user.model';
 import { Exclude } from 'class-transformer';
+import { ApiProperty } from '@nestjs/swagger';
 
 @Entity({ name: 'users' })
 @Unique(['email'])
 export class UserEntity implements User {
+  @ApiProperty()
   @PrimaryGeneratedColumn()
   id: number;
 
+  @ApiProperty()
   @Column()
-  firstName: string;
+  fullName: string;
 
-  @Column()
-  lastName: string;
-
+  @ApiProperty()
   @Column()
   email: string;
 
   @Exclude()
   @Column()
   password: string;
-
-  @Column({ type: 'enum', enum: Gender, nullable: true })
-  gender: Gender;
-
-  @Column({ nullable: true })
-  birthdate: Date;
-
-  @Column({ nullable: true })
-  country: string;
 }
