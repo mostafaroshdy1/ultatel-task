@@ -1,18 +1,9 @@
-import {
-  IsNotEmpty,
-  IsEmail,
-  IsEnum,
-  IsDate,
-  Matches,
-  IsOptional,
-} from 'class-validator';
+import { IsNotEmpty, IsEmail, Matches } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform, TransformFnParams } from 'class-transformer';
 import * as sanitizeHtml from 'sanitize-html';
-import { Gender, User } from 'src/models/user.model';
-import { ConfigModule } from '@nestjs/config';
-// ConfigModule.forRoot({ isGlobal: true });
-console.log(process.env.PASSWORD_REGEX);
+import { User } from 'src/models/user.model';
+import { Match } from 'src/common/decorators/match';
 
 export class CreateUserDto implements User {
   id: number;
@@ -20,12 +11,7 @@ export class CreateUserDto implements User {
   @ApiProperty()
   @IsNotEmpty()
   @Transform((params: TransformFnParams) => sanitizeHtml(params.value))
-  firstName: string;
-
-  @ApiProperty()
-  @IsNotEmpty()
-  @Transform((params: TransformFnParams) => sanitizeHtml(params.value))
-  lastName: string;
+  fullName: string;
 
   @ApiProperty()
   @IsEmail()
@@ -33,21 +19,11 @@ export class CreateUserDto implements User {
 
   @ApiProperty()
   @IsNotEmpty()
-  @Matches(new RegExp(process.env.PASSWORD_REGEX))
+  @Matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/)
   password: string;
 
   @ApiProperty()
-  @IsOptional()
-  @IsEnum(Gender)
-  gender: Gender;
-
-  @ApiProperty()
-  @IsDate()
-  @IsOptional()
-  birthdate: Date;
-
-  @ApiProperty()
-  @IsOptional()
-  @Transform((params: TransformFnParams) => sanitizeHtml(params.value))
-  country: string;
+  @IsNotEmpty()
+  @Match('password') // Custom decorator to check if passwords match
+  confirmPassword: string;
 }
