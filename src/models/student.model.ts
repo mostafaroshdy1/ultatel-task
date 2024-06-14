@@ -10,5 +10,3 @@ export interface Student {
   birthDate: Date;
   country: Country;
 }
-
-// src/common/enums/countries.enum.ts
