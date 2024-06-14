@@ -1,5 +1,5 @@
 import { Entity, Column, PrimaryGeneratedColumn, Unique } from 'typeorm';
-import { Gender, User } from 'src/models/user.model';
+import { User } from 'src/models/user.model';
 import { Exclude } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 

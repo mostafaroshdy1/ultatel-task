@@ -27,7 +27,6 @@ export class UserService {
     if (foundUser) {
       throw new BadRequestException('Email already exists');
     }
-    createUserDto.password = await this.hash(createUserDto.password);
     return this.usersRepository.create(createUserDto);
   }
 
@@ -60,10 +59,5 @@ export class UserService {
       throw new NotFoundException('User not found');
     }
     return this.usersRepository.remove(foundUser);
-  }
-
-  hash(text: string): string {
-    const salt = parseInt(process.env.BCRYPT_SALT);
-    return bcrypt.hash(text, salt);
   }
 }

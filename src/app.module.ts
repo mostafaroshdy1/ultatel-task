@@ -5,10 +5,10 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserModule } from './modules/user.module';
-import { dataSourceOptions } from './db/data-source'; // Import dataSourceOptions from your custom data source file
+import { dataSourceOptions } from './db/data-source';
 import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './modules/auth.module';
-import { StudentModule } from './student/student.module';
+import { StudentModule } from './modules/student.module';
 
 @Module({
   imports: [
