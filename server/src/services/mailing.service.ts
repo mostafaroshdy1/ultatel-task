@@ -46,7 +46,7 @@ export class MailingService {
   }
 
   async sendUserConfirmation(user: UserEntity, token: string) {
-    const url = `${process.env.CLIENT_URL}?id=${user.id}&token=${token}`;
+    const url = `${process.env.CLIENT_URL}/verify-email/${user.id}/${token}`;
     const html = this.confirmationTemplate({ name: user.fullName, url });
     await this.transporter.sendMail({
       to: user.email,

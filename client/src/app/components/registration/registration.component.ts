@@ -8,23 +8,24 @@ import {
 } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { AuthService } from '../../../services/auth.service';
+import { catchError, of, tap, throttleTime } from 'rxjs';
 
 @Component({
-  selector: 'app-register',
+  selector: 'app-registration',
   standalone: true,
   imports: [ReactiveFormsModule, CommonModule, RouterModule],
   templateUrl: './registration.component.html',
-  styleUrl: './registration.component.css',
+  styleUrls: ['./registration.component.css'],
 })
-export class RegisterationComponent {
+export class RegistrationComponent {
   registerForm: FormGroup;
-  showPassword: boolean = false;
+  showPassword = false;
   emailToken = '';
   emailResent = false;
   register = true;
   emailConfirmation = false;
   emailTaken = false;
-  showConfirmPassword: boolean = false;
+  showConfirmPassword = false;
   passwordStrength = {
     class: '',
     lengthValid: false,
@@ -42,19 +43,19 @@ export class RegisterationComponent {
         password: ['', Validators.required],
         confirmPassword: ['', Validators.required],
       },
-      { validator: this.passwordMatchValidator }
+      { validators: this.passwordMatchValidator }
     );
   }
 
-  togglePasswordVisibility() {
+  togglePasswordVisibility(): void {
     this.showPassword = !this.showPassword;
   }
 
-  toggleConfirmPasswordVisibility() {
+  toggleConfirmPasswordVisibility(): void {
     this.showConfirmPassword = !this.showConfirmPassword;
   }
 
-  passwordMatchValidator(formGroup: FormGroup) {
+  passwordMatchValidator(formGroup: FormGroup): void {
     const password = formGroup.get('password')?.value;
     const confirmPassword = formGroup.get('confirmPassword')?.value;
 
@@ -65,7 +66,7 @@ export class RegisterationComponent {
     }
   }
 
-  markAllAsTouched(formGroup: FormGroup) {
+  markAllAsTouched(formGroup: FormGroup): void {
     Object.values(formGroup.controls).forEach((control) => {
       control.markAsTouched();
       if ((control as FormGroup).controls) {
@@ -74,21 +75,18 @@ export class RegisterationComponent {
     });
   }
 
-  checkPasswordStrength() {
+  checkPasswordStrength(): void {
     const password = this.registerForm.get('password')?.value;
     this.passwordStrength.lengthValid = password.length >= 8;
-
     this.passwordStrength.hasNumber = /[0-9]/.test(password);
     this.passwordStrength.hasUpperCase = /[A-Z]/.test(password);
     this.passwordStrength.hasLowerCase = /[a-z]/.test(password);
     this.passwordStrength.hasSymbol = /[^A-Za-z0-9]/.test(password);
 
-    if (this.passwordStrength.lengthValid && this.countValidations() == 4) {
+    const validations = this.countValidations();
+    if (this.passwordStrength.lengthValid && validations === 4) {
       this.passwordStrength.class = 'strong';
-    } else if (
-      this.passwordStrength.lengthValid &&
-      this.countValidations() >= 2
-    ) {
+    } else if (this.passwordStrength.lengthValid && validations >= 2) {
       this.passwordStrength.class = 'medium';
     } else if (this.passwordStrength.lengthValid) {
       this.passwordStrength.class = 'weak';
@@ -106,20 +104,20 @@ export class RegisterationComponent {
     return count;
   }
 
-  onSubmit() {
+  onSubmit(): void {
     if (this.registerForm.valid) {
       const user = this.registerForm.value;
 
       this.authService.register(user).subscribe(
-        (response: any) => {
+        (response) => {
           if (response.email) {
             this.register = false;
             this.emailConfirmation = true;
             this.emailToken = response.emailToken;
           }
         },
-        (error: any) => {
-          if (error.error.message == 'Email already exists') {
+        (error) => {
+          if (error.error.message === 'Email already exists') {
             this.emailTaken = true;
           } else {
             this.emailTaken = false;
@@ -131,13 +129,23 @@ export class RegisterationComponent {
     }
   }
 
-  resendConfirmationEmail() {
+  resendConfirmationEmail(): void {
     const email = this.registerForm.get('email')?.value;
-    this.authService.resendConfirmationEmail(email).subscribe(
-      (response: any) => {
-        this.emailResent = true;
-      },
-      (error: any) => {}
-    );
+
+    if (email) {
+      this.authService
+        .resendConfirmationEmail(email)
+        .pipe(
+          throttleTime(4000),
+          tap(() => {
+            this.emailResent = true;
+          }),
+          catchError((error) => {
+            console.error('Error resending confirmation email:', error);
+            return of(null);
+          })
+        )
+        .subscribe();
+    }
   }
 }

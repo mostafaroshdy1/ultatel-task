@@ -1,9 +1,16 @@
 import { Routes } from '@angular/router';
-import { RegisterationComponent } from './components/registration/registration.component';
 import { LoginComponent } from './components/login/login.component';
+import { EmailConfirmedComponent } from './components/email-confirmed/email-confirmed.component';
+import { RegistrationComponent } from './components/registration/registration.component';
+// import { EmailConfirmedComponent } from './components/email-confirmed/email-confirmed.component';
 export const routes: Routes = [
-  { path: 'register', component: RegisterationComponent },
+  { path: 'register', component: RegistrationComponent },
   { path: 'login', component: LoginComponent },
+  {
+    path: 'verify-email/:id/:token',
+    component: EmailConfirmedComponent,
+  },
+
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: '**', redirectTo: 'login' },
 ];

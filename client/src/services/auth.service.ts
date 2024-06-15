@@ -11,25 +11,18 @@ export class AuthService {
   constructor(private http: HttpClient) {}
 
   register(user: any): Observable<any> {
-    console.log(user);
-    console.log(this.baseUrl);
-
     return this.http.post(`${this.baseUrl}/user`, user);
   }
 
   resendConfirmationEmail(email: string): Observable<any> {
-    return this.http.post(`${this.baseUrl}/resend-confirmation-email`, {
-      email,
-    });
+    return this.http.get(`${this.baseUrl}/user/reactivate/${email}`);
   }
 
   login(user: any): Observable<any> {
     return this.http.post(`${this.baseUrl}/login`, user);
   }
 
-  confirmEmail(token: string): Observable<any> {
-    return this.http.get(`${this.baseUrl}/confirm-email`, {
-      params: { token },
-    });
+  confirmEmail(token: string, userId: string): Observable<any> {
+    return this.http.get(`${this.baseUrl}/user/activate/${userId}/${token}`);
   }
 }

@@ -92,9 +92,9 @@ export class UserController {
 
   @ApiOkResponse({ description: 'Activation email sent' })
   @ApiTags('user')
-  @Get('reactivate/:id')
-  async reActivate(@Param('id') id: number) {
-    const foundUser = await this.userService.findOne(id);
+  @Get('reactivate/:email')
+  async reActivate(@Param('email') email: string) {
+    const foundUser = await this.userService.findOneByEmail(email);
     if (!foundUser) {
       throw new NotFoundException('User not found');
     }
