@@ -18,15 +18,12 @@ export class AuthService {
     user: SignInDto,
   ): Promise<{ access_token: string; refresh_token: string }> {
     const foundUser = await this.userService.findOneByEmail(user.email);
-    console.log(user);
 
     if (!foundUser) {
       throw new UnauthorizedException();
     }
 
     if (!(await bcrypt.compare(user.password, foundUser.password))) {
-      console.log(foundUser.password);
-
       throw new UnauthorizedException();
     }
 

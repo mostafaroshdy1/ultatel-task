@@ -3,4 +3,8 @@ export interface User {
   fullName: string;
   email: string;
   password: string;
+  activationToken: string;
+  activated: boolean;
+  createdAt: Date;
+  updatedAt: Date;
 }
