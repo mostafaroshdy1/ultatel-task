@@ -26,4 +26,9 @@ export class CreateUserDto implements User {
   @IsNotEmpty()
   @Match('password') // Custom decorator to check if passwords match
   confirmPassword: string;
+
+  activationToken: string;
+  activated: boolean;
+  createdAt: Date;
+  updatedAt: Date;
 }
