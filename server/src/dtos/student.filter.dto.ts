@@ -34,4 +34,12 @@ export class StudentFilterDto {
   @IsOptional()
   @IsString()
   offset?: number;
+
+  @IsOptional()
+  @IsEnum(['name', 'birthDate', 'country', 'gender', 'email'])
+  orderBy?: string;
+
+  @IsOptional()
+  @IsEnum(['asc', 'desc'])
+  order?: string;
 }

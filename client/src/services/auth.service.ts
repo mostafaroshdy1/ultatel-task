@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../environments/environment.development';
+
 @Injectable({
   providedIn: 'root',
 })
@@ -24,5 +25,8 @@ export class AuthService {
 
   confirmEmail(token: string, userId: string): Observable<any> {
     return this.http.get(`${this.baseUrl}/user/activate/${userId}/${token}`);
+  }
+  get isLoggedIn(): boolean {
+    return !!localStorage.getItem('token');
   }
 }

@@ -63,7 +63,7 @@ export class StudentService {
     return foundStudent;
   }
 
-  async filter(filters: StudentFilterDto) {
+  async filter(filters: StudentFilterDto): Promise<[Student[], number] | null> {
     const options: any = { where: {} };
 
     if (filters.name) {
@@ -116,6 +116,9 @@ export class StudentService {
       options.where.gender = filters.gender;
     }
 
+    // Get the total count of results that match the filters
+    const totalResultsPromise = this.studentRepository.count(options);
+
     if (filters.limit) {
       options.take = filters.limit;
 
@@ -124,8 +127,23 @@ export class StudentService {
         options.skip = filters.offset;
       }
     }
-
+    if (filters.orderBy === 'name') {
+      options.order = {
+        firstName: filters.order || 'asc',
+        lastName: filters.order || 'asc',
+      };
+    } else if (filters.orderBy) {
+      options.order = {
+        [filters.orderBy]: filters.order || 'asc',
+      };
+    }
     console.log(options);
-    return this.studentRepository.findAll(options);
+
+    const [results, totalResults] = await Promise.all([
+      this.studentRepository.findAll(options),
+      totalResultsPromise,
+    ]);
+
+    return [results, totalResults];
   }
 }

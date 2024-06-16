@@ -15,6 +15,7 @@ import { catchError, of, tap, throttleTime } from 'rxjs';
   selector: 'app-registration',
   standalone: true,
   imports: [ReactiveFormsModule, CommonModule, RouterModule],
+  providers: [AuthService],
   templateUrl: './registration.component.html',
   styleUrls: ['./registration.component.css'],
 })
