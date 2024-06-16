@@ -133,42 +133,43 @@ export class StudentModalComponent {
     this.activeModal.dismiss('Cross click');
   }
 
-  save() {
+  save(): void {
     this.populateFormForSave(this.student);
-
     if (this.studentForm.valid) {
       const formData = this.studentForm.value;
       if (this.isEditMode && this.student) {
         if (this.isFormValueChanged(this.student, this.originalStudentData)) {
-          this.studentService.updateStudent(this.studentId, formData).subscribe(
-            (response: any) => {
-              Swal.fire({
-                icon: 'success',
-                title: 'Student Updated',
-                text: 'Student updated successfully!',
-                confirmButtonText: 'OK',
-              }).then(() => {
-                this.activeModal.close(response);
-                this.studentUpdated.emit(response);
-              });
-            },
-            (error: any) => {
-              if (error.error.message == 'Email already exists') {
+          this.studentService
+            .updateStudent(this.studentId, formData)
+            .subscribe({
+              next: (response: any) => {
                 Swal.fire({
-                  icon: 'error',
-                  title: 'Error',
-                  text: 'Email already exists',
+                  icon: 'success',
+                  title: 'Student Updated',
+                  text: 'Student updated successfully!',
                   confirmButtonText: 'OK',
+                }).then(() => {
+                  this.activeModal.close(response);
+                  this.studentUpdated.emit(response);
                 });
-              }
-            }
-          );
+              },
+              error: (error: any) => {
+                if (error.error.message == 'Email already exists') {
+                  Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Email already exists',
+                    confirmButtonText: 'OK',
+                  });
+                }
+              },
+            });
         } else {
           this.activeModal.dismiss('cancel');
         }
       } else {
-        this.studentService.createStudent(formData).subscribe(
-          (response: any) => {
+        this.studentService.createStudent(formData).subscribe({
+          next: (response: any) => {
             Swal.fire({
               icon: 'success',
               title: 'Student Created',
@@ -179,7 +180,7 @@ export class StudentModalComponent {
               this.studentAdded.emit(response);
             });
           },
-          (error: any) => {
+          error: (error: any) => {
             if (error.error.message == 'Email is already taken') {
               Swal.fire({
                 icon: 'error',
@@ -188,8 +189,8 @@ export class StudentModalComponent {
                 confirmButtonText: 'OK',
               });
             }
-          }
-        );
+          },
+        });
       }
     } else {
       this.markAllAsTouched(this.studentForm);

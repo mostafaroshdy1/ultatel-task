@@ -3,7 +3,10 @@
     <div class="image col-xl-2 col-md-3 col-sm-4 col-7">
       <img src="assets/logo.svg" class="img-fluid" alt="" />
     </div>
-    <button class="btn btn-danger col-xl-1 col-sm-2 col-3" (click)="logout()">
+    <button
+      class="btn btn-danger col-xl-1 col-sm-2 col-3 me-2"
+      (click)="logout()"
+    >
       Logout
     </button>
   </div>
@@ -48,12 +51,16 @@
               type="number"
               class="form-control"
               [(ngModel)]="selectedMinAge"
+              min="1"
+              style="appearance: textfield; -webkit-appearance: textfield"
             />
             <a class="mx-2 text-decoration-none">to</a>
             <input
               type="number"
               class="form-control"
               [(ngModel)]="selectedMaxAge"
+              max="100"
+              style="appearance: textfield; -webkit-appearance: textfield"
             />
           </div>
         </div>
@@ -239,8 +246,8 @@
           <p>
             Showing <span>{{ (currentPage - 1) * pageSize + 1 }}</span>
             to
-            <span>{{ getMaxIndexDisplayed() }}</span>
-            of <span>{{ filteredStudents.length }}</span> entries
+            <span>{{ getMaxRange() }}</span>
+            of <span>{{ totalEntries }}</span> entries
           </p>
         </div>
         <div

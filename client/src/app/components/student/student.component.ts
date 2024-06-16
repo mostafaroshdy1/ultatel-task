@@ -9,7 +9,8 @@ import { StudentModalComponent } from '../student-modal/student-modal.component'
 import { StudentService } from '../../../services/student.service';
 import Swal from 'sweetalert2';
 import { AgePipe } from '../../../pipes/age.pipe';
-import { of } from 'rxjs';
+import { catchError, finalize, of } from 'rxjs';
+
 @Component({
   selector: 'app-home',
   standalone: true,
@@ -43,6 +44,7 @@ export class StudentComponent {
   selectedMinAge: number | null = null;
   selectedMaxAge: number | null = null;
   filter: any = this.defaultFilter;
+  totalEntries: number = 0;
 
   genders = [
     { id: 1, name: 'male' },
@@ -61,9 +63,7 @@ export class StudentComponent {
     private router: Router,
     private studentService: StudentService,
     private modalService: NgbModal
-  ) {
-    console.log('opps');
-  }
+  ) {}
 
   ngOnInit() {
     this.fetchCountries();
@@ -91,6 +91,7 @@ export class StudentComponent {
         this.students = data.result;
         this.filteredStudents = data.result;
         this.totalPages = Math.ceil(data.total / this.pageSize);
+        this.totalEntries = data.total;
       },
       error: (error) => {
         console.error('Error fetching students:', error);
@@ -172,19 +173,17 @@ export class StudentComponent {
 
   searchStudents() {
     this.filter = {
-      limit: this.limit,
-      offset: this.limit * (this.currentPage - 1),
+      limit: this.pageSize,
+      offset: this.pageSize * (this.currentPage - 1),
       country: this.selectedCountry,
       gender: this.selectedGender,
       name: this.selectedName.trim(),
       minAge: this.selectedMinAge,
       maxAge: this.selectedMaxAge,
     };
-    console.log(this.filter);
 
     this.fetchStudents(this.filter);
     this.goToFirstPage();
-    this.sortTable(this.sortColumn);
   }
 
   resetFilters() {
@@ -193,17 +192,13 @@ export class StudentComponent {
     this.selectedMinAge = null;
     this.selectedMaxAge = null;
     this.selectedGender = null;
+    this.defaultFilter.limit = this.filter.limit;
+    this.defaultFilter.offset = this.filter.offset;
     this.fetchStudents(this.defaultFilter);
-    this.sortTable(this.sortColumn);
   }
 
-  get paginatedStudents(): any[] {
-    return this.filteredStudents;
-  }
-
-  getMaxIndexDisplayed(): number {
-    const endIndex = this.currentPage * this.pageSize;
-    return Math.min(endIndex, this.filteredStudents.length);
+  getMaxRange(): number {
+    return Math.min(this.currentPage * this.pageSize, this.totalEntries);
   }
 
   confirmDelete(student: any) {
@@ -221,17 +216,22 @@ export class StudentComponent {
     });
   }
 
-  deleteStudent(studentId: number) {
-    this.studentService.deleteStudent(studentId).subscribe(
-      () => {
+  deleteStudent(studentId: number): void {
+    this.studentService
+      .deleteStudent(studentId)
+      .pipe(
+        catchError((error) => {
+          console.error('Error deleting student:', error);
+          Swal.fire('Error!', 'Failed to delete the student.', 'error');
+          return of(null);
+        }),
+        finalize(() => {
+          this.fetchStudents(this.filter);
+        })
+      )
+      .subscribe(() => {
         Swal.fire('Deleted!', 'The student has been deleted.', 'success');
-        this.fetchStudents(this.filter);
-      },
-      (error) => {
-        Swal.fire('Error!', 'Failed to delete the student.', 'error');
-        console.error('Error deleting student:', error);
-      }
-    );
+      });
   }
 
   openAddEditModal(isAddMode: boolean, student?: any) {
@@ -244,26 +244,16 @@ export class StudentComponent {
       : 'Edit Student';
     modalRef.componentInstance.student = student ? { ...student } : {};
 
-    modalRef.componentInstance.studentUpdated.subscribe(
-      (updatedStudent: any) => {
-        this.updateStudentInList(updatedStudent);
-      }
-    );
-
-    modalRef.componentInstance.studentAdded.subscribe((newStudent: any) => {
-      this.addStudentToList(newStudent);
+    modalRef.componentInstance.studentUpdated.subscribe({
+      next: (respone: any) => {
+        this.fetchStudents(this.filter);
+      },
     });
 
-    this.totalPages = Math.ceil(this.filteredStudents.length / this.pageSize);
-  }
-  updateStudentInList(updatedStudent: any) {
-    const index = this.students.findIndex((s) => s.id === updatedStudent.id);
-    if (index !== -1) {
-      this.students[index] = updatedStudent;
-    }
-  }
-
-  addStudentToList(newStudent: any) {
-    this.students.push(newStudent);
+    modalRef.componentInstance.studentAdded.subscribe({
+      next: (respone: any) => {
+        this.fetchStudents(this.filter);
+      },
+    });
   }
 }
