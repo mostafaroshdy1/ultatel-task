@@ -128,6 +128,13 @@ export class StudentService {
       }
     }
 
+    if (filters.orderBy) {
+      options.order = {
+        [filters.orderBy]: filters.order || 'asc',
+      };
+    }
+    console.log(options);
+
     const [results, totalResults] = await Promise.all([
       this.studentRepository.findAll(options),
       totalResultsPromise,
