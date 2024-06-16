@@ -26,4 +26,7 @@ export class AuthService {
   confirmEmail(token: string, userId: string): Observable<any> {
     return this.http.get(`${this.baseUrl}/user/activate/${userId}/${token}`);
   }
+  get isLoggedIn(): boolean {
+    return !!localStorage.getItem('token');
+  }
 }

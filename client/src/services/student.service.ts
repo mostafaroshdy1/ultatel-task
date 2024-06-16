@@ -12,8 +12,6 @@ export class StudentService {
   constructor(private http: HttpClient) {}
 
   getAllStudents(filters: any): Observable<any[]> {
-    const token = localStorage.getItem('token');
-    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
     let params = new HttpParams();
 
     // Add query parameters
@@ -45,41 +43,25 @@ export class StudentService {
       params = params.append('order', filters.order);
     }
 
-    return this.http.get<any[]>(`${this.baseUrl}/student`, { headers, params });
+    return this.http.get<any[]>(`${this.baseUrl}/student`, { params });
   }
 
   getStudentById(studentId: number): Observable<any> {
-    const token = localStorage.getItem('token');
-    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-    return this.http.get<any>(`${this.baseUrl}/${studentId}`, { headers });
+    return this.http.get<any>(`${this.baseUrl}/${studentId}`);
   }
 
   createStudent(studentData: any): Observable<any> {
-    const token = localStorage.getItem('token');
-    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-    return this.http.post<any>(`${this.baseUrl}/student`, studentData, {
-      headers,
-    });
+    return this.http.post<any>(`${this.baseUrl}/student`, studentData);
   }
 
   updateStudent(studentId: number, studentData: any): Observable<any> {
-    const token = localStorage.getItem('token');
-    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-
     return this.http.patch<any>(
       `${this.baseUrl}/student/${studentId}`,
-      studentData,
-      {
-        headers,
-      }
+      studentData
     );
   }
 
   deleteStudent(studentId: number): Observable<any> {
-    const token = localStorage.getItem('token');
-    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-    return this.http.delete<any>(`${this.baseUrl}/student/${studentId}`, {
-      headers,
-    });
+    return this.http.delete<any>(`${this.baseUrl}/student/${studentId}`);
   }
 }

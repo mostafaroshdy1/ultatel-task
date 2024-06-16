@@ -14,13 +14,7 @@ import { catchError, finalize, of } from 'rxjs';
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [
-    NgSelectModule,
-    CommonModule,
-    FormsModule,
-    HttpClientModule,
-    AgePipe,
-  ],
+  imports: [NgSelectModule, CommonModule, FormsModule, AgePipe],
   providers: [StudentService],
   templateUrl: './student.component.html',
   styleUrl: './student.component.css',
@@ -109,7 +103,7 @@ export class StudentComponent {
       cancelButtonText: 'Cancel',
     }).then((result: any) => {
       if (result.isConfirmed) {
-        localStorage.removeItem('token');
+        localStorage.clear();
         this.router.navigate(['/login']);
       }
     });

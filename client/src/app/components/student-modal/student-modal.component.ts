@@ -20,7 +20,6 @@ import { StudentService } from '../../../services/student.service';
     NgSelectModule,
     NgbModule,
     NgbDatepickerModule,
-    HttpClientModule,
   ],
   providers: [StudentService],
   templateUrl: './student-modal.component.html',

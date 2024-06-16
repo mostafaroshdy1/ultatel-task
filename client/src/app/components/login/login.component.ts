@@ -14,6 +14,7 @@ import { catchError, of, throttleTime } from 'rxjs';
   selector: 'app-login',
   standalone: true,
   imports: [ReactiveFormsModule, CommonModule, RouterModule],
+  providers: [AuthService],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css',
 })
@@ -61,7 +62,7 @@ export class LoginComponent {
         next: (response: any) => {
           localStorage.setItem('token', response.access_token);
           localStorage.setItem('refreshToken', response.refresh_token);
-          this.router.navigate(['/home']);
+          this.router.navigate(['/students']);
         },
         error: (error: any) => {
           console.error('Login error:', error);
