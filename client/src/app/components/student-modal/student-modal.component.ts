@@ -35,7 +35,7 @@ export class StudentModalComponent {
   isEditMode: boolean = false;
   oldStudent: any;
   studentId: any = '';
-  dateOfBirth: NgbDateStruct | null = null;
+  birthDate: NgbDateStruct | null = null;
   studentForm: FormGroup;
   originalStudentData: any;
 
@@ -51,11 +51,12 @@ export class StudentModalComponent {
     private studentService: StudentService
   ) {
     this.studentForm = this.fb.group({
-      name: ['', Validators.required],
+      firstName: ['', Validators.required],
+      lastName: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
       gender: ['', Validators.required],
       country: ['', Validators.required],
-      dateOfBirth: [null, Validators.required],
+      birthDate: [null, Validators.required],
     });
   }
 
@@ -65,11 +66,11 @@ export class StudentModalComponent {
       this.oldStudent = this.student;
       this.studentId = this.student.id;
       this.originalStudentData = { ...this.student };
-      this.student.dateOfBirth = this.dateStringToNgbDateStruct(
-        this.student.dateOfBirth
+      this.student.birthDate = this.dateStringToNgbDateStruct(
+        this.student.birthDate
       );
-      this.originalStudentData.dateOfBirth = this.dateStringToNgbDateStruct(
-        this.originalStudentData.dateOfBirth
+      this.originalStudentData.birthDate = this.dateStringToNgbDateStruct(
+        this.originalStudentData.birthDate
       );
     }
 
@@ -100,11 +101,12 @@ export class StudentModalComponent {
 
   populateFormForSave(student: any) {
     this.studentForm.patchValue({
-      name: student.name,
+      firstName: student.firstName,
+      lastName: student.lastName,
       email: student.email,
       gender: student.gender,
       country: student.country,
-      dateOfBirth: this.dateStructToString(student.dateOfBirth),
+      birthDate: this.dateStructToString(student.birthDate),
     });
   }
 
@@ -151,11 +153,11 @@ export class StudentModalComponent {
               });
             },
             (error: any) => {
-              if (error.error.message == 'Email is already taken') {
+              if (error.error.message == 'Email already exists') {
                 Swal.fire({
                   icon: 'error',
                   title: 'Error',
-                  text: 'Email is already taken',
+                  text: 'Email already exists',
                   confirmButtonText: 'OK',
                 });
               }

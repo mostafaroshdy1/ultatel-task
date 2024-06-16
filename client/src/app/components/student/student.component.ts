@@ -42,12 +42,11 @@ export class StudentComponent {
   selectedName: string = '';
   selectedMinAge: number | null = null;
   selectedMaxAge: number | null = null;
-  // filter: any;
   filter: any = this.defaultFilter;
 
   genders = [
-    { id: 1, name: 'Male' },
-    { id: 2, name: 'Female' },
+    { id: 1, name: 'male' },
+    { id: 2, name: 'female' },
   ];
   entries = [
     { id: 1, name: '10' },
@@ -89,8 +88,6 @@ export class StudentComponent {
   fetchStudents(filters: any) {
     this.studentService.getAllStudents(filters).subscribe({
       next: (data: any) => {
-        console.log(data.result);
-
         this.students = data.result;
         this.filteredStudents = data.result;
         this.totalPages = Math.ceil(data.total / this.pageSize);
@@ -139,21 +136,12 @@ export class StudentComponent {
       this.sortColumn = column;
       this.sortDirection = 'asc';
     }
-
-    this.filteredStudents.sort((a, b) => {
-      const compareA =
-        typeof a[column] === 'string' ? a[column].toLowerCase() : a[column];
-      const compareB =
-        typeof b[column] === 'string' ? b[column].toLowerCase() : b[column];
-
-      if (compareA < compareB) {
-        return this.sortDirection === 'asc' ? -1 : 1;
-      } else if (compareA > compareB) {
-        return this.sortDirection === 'asc' ? 1 : -1;
-      } else {
-        return 0;
-      }
-    });
+    this.filter = {
+      ...this.filter,
+      orderBy: column,
+      order: this.sortDirection,
+    };
+    this.fetchStudents(this.filter);
   }
 
   goToPage(page: number) {
@@ -237,16 +225,7 @@ export class StudentComponent {
     this.studentService.deleteStudent(studentId).subscribe(
       () => {
         Swal.fire('Deleted!', 'The student has been deleted.', 'success');
-        this.filteredStudents = this.filteredStudents.filter(
-          (s) => s.id !== studentId
-        );
-        this.students = this.students.filter((s) => s.id !== studentId);
-        if (this.paginatedStudents.length === 0 && this.currentPage > 1) {
-          this.currentPage--;
-        }
-        this.totalPages = Math.ceil(
-          this.filteredStudents.length / this.pageSize
-        );
+        this.fetchStudents(this.filter);
       },
       (error) => {
         Swal.fire('Error!', 'Failed to delete the student.', 'error');

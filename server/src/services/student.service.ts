@@ -127,8 +127,12 @@ export class StudentService {
         options.skip = filters.offset;
       }
     }
-
-    if (filters.orderBy) {
+    if (filters.orderBy === 'name') {
+      options.order = {
+        firstName: filters.order || 'asc',
+        lastName: filters.order || 'asc',
+      };
+    } else if (filters.orderBy) {
       options.order = {
         [filters.orderBy]: filters.order || 'asc',
       };
