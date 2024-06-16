@@ -19,7 +19,7 @@ export class AuthService {
   }
 
   login(user: any): Observable<any> {
-    return this.http.post(`${this.baseUrl}/login`, user);
+    return this.http.post(`${this.baseUrl}/auth/login`, user);
   }
 
   confirmEmail(token: string, userId: string): Observable<any> {

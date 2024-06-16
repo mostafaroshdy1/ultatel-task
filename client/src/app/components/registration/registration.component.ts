@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import {
+  AbstractControlOptions,
   FormBuilder,
   FormGroup,
   ReactiveFormsModule,
@@ -43,7 +44,7 @@ export class RegistrationComponent {
         password: ['', Validators.required],
         confirmPassword: ['', Validators.required],
       },
-      { validators: this.passwordMatchValidator }
+      { validators: this.passwordMatchValidator } as AbstractControlOptions
     );
   }
 
@@ -108,22 +109,17 @@ export class RegistrationComponent {
     if (this.registerForm.valid) {
       const user = this.registerForm.value;
 
-      this.authService.register(user).subscribe(
-        (response) => {
+      this.authService.register(user).subscribe({
+        next: (response) => {
           if (response.email) {
             this.register = false;
             this.emailConfirmation = true;
-            this.emailToken = response.emailToken;
           }
         },
-        (error) => {
-          if (error.error.message === 'Email already exists') {
-            this.emailTaken = true;
-          } else {
-            this.emailTaken = false;
-          }
-        }
-      );
+        error: (error) => {
+          this.emailTaken = error.error.message === 'Email already exists';
+        },
+      });
     } else {
       this.markAllAsTouched(this.registerForm);
     }

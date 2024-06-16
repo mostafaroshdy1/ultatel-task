@@ -1,4 +1,9 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { UserService } from 'src/services/user.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
@@ -19,13 +24,13 @@ export class AuthService {
   ): Promise<{ access_token: string; refresh_token: string }> {
     const foundUser = await this.userService.findOneByEmail(user.email);
 
-    if (!foundUser) {
-      throw new UnauthorizedException();
-    }
+    if (!foundUser) throw new NotFoundException('Invalid Email Adress');
 
-    if (!(await bcrypt.compare(user.password, foundUser.password))) {
+    if (!foundUser.activated)
+      throw new ForbiddenException('Email is not confirmed');
+
+    if (!(await bcrypt.compare(user.password, foundUser.password)))
       throw new UnauthorizedException();
-    }
 
     return this.createJwtTokens(foundUser);
   }
