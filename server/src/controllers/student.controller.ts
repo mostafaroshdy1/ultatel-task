@@ -16,6 +16,7 @@ import { UpdateStudentDto } from 'src/dtos/update-student.dto';
 import { StudentFilterDto } from 'src/dtos/student.filter.dto';
 import { ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from 'src/common/guards/auth.guard';
+import { StudentResponseDto } from 'src/dtos/student-response.dto';
 
 @Controller('student')
 export class StudentController {
@@ -30,11 +31,12 @@ export class StudentController {
   }
 
   @UseGuards(AuthGuard)
-  @ApiOkResponse({ type: [CreateStudentDto] })
+  @ApiOkResponse({ type: StudentResponseDto })
   @ApiTags('student')
   @Get()
   async findAll(@Query() filters: StudentFilterDto) {
-    return await this.studentService.filter(filters);
+    const [result, total] = await this.studentService.filter(filters);
+    return { result, total };
   }
 
   @UseGuards(AuthGuard)

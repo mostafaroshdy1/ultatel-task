@@ -69,4 +69,8 @@ export abstract class BaseAbstractRepository<T extends HasId>
     }
     return this.save(entity);
   }
+
+  public count(options?: FindManyOptions<T>): Promise<number> {
+    return this.entity.count(options);
+  }
 }
