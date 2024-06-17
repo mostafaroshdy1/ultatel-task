@@ -4,13 +4,23 @@ import { EmailConfirmedComponent } from './components/email-confirmed/email-conf
 import { RegistrationComponent } from './components/registration/registration.component';
 import { StudentComponent } from './components/student/student.component';
 import { AuthGuard } from '../guards/auth.guard';
+import { DeactivateGuard } from '../guards/deactivate.guard';
 
 export const routes: Routes = [
-  { path: 'register', component: RegistrationComponent },
-  { path: 'login', component: LoginComponent },
+  {
+    path: 'register',
+    component: RegistrationComponent,
+    canActivate: [DeactivateGuard],
+  },
+  {
+    path: 'login',
+    component: LoginComponent,
+    canActivate: [DeactivateGuard],
+  },
   {
     path: 'verify-email/:id/:token',
     component: EmailConfirmedComponent,
+    canActivate: [DeactivateGuard],
   },
   { path: 'students', component: StudentComponent, canActivate: [AuthGuard] },
 
