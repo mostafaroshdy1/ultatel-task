@@ -22,7 +22,7 @@ export const AuthInterceptor: HttpInterceptorFn = (req, next) => {
       })
     : req;
 
-  console.log('Request intercepted:', req.url);
+  // console.log('Request intercepted:', req.url);
 
   // Continue with the modified request
   return next(modifiedReq).pipe(
