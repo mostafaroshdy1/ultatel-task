@@ -145,11 +145,12 @@ export class StudentComponent {
   goToPage(page: number) {
     if (page >= 1 && page <= this.totalPages) {
       this.currentPage = page;
-      this.fetchStudents({
+      this.filter = {
         ...this.filter,
         offset: this.filter.limit * (page - 1),
-      });
+      };
     }
+    this.fetchStudents(this.filter);
   }
 
   goToFirstPage() {
@@ -176,10 +177,9 @@ export class StudentComponent {
       gender: this.selectedGender,
       name: this.selectedName.trim(),
       minAge: this.selectedMinAge,
-      maxAge: this.selectedMaxAge,
+      maxAge: this.selectedMaxAge ? this.selectedMaxAge + 1 : null,
     };
 
-    // this.fetchStudents(this.filter);
     this.goToFirstPage();
   }
 
@@ -191,7 +191,8 @@ export class StudentComponent {
     this.selectedGender = null;
     this.defaultFilter.limit = this.filter.limit;
     this.defaultFilter.offset = this.filter.offset;
-    this.fetchStudents(this.defaultFilter);
+    this.filter = this.defaultFilter;
+    this.fetchStudents(this.filter);
   }
 
   getMaxRange(): number {
