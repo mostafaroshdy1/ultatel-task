@@ -137,7 +137,6 @@ export class StudentService {
         [filters.orderBy]: filters.order || 'asc',
       };
     }
-    console.log(options);
 
     const [results, totalResults] = await Promise.all([
       this.studentRepository.findAll(options),
