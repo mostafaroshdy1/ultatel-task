@@ -10,6 +10,7 @@ import { StudentService } from '../../../services/student.service';
 import Swal from 'sweetalert2';
 import { AgePipe } from '../../../pipes/age.pipe';
 import { catchError, finalize, of } from 'rxjs';
+import { AuthService } from '../../../services/auth.service';
 
 @Component({
   selector: 'app-home',
@@ -56,7 +57,8 @@ export class StudentComponent {
     private http: HttpClient,
     private router: Router,
     private studentService: StudentService,
-    private modalService: NgbModal
+    private modalService: NgbModal,
+    private authService: AuthService
   ) {}
 
   ngOnInit() {
@@ -88,6 +90,8 @@ export class StudentComponent {
         this.totalEntries = data.total;
       },
       error: (error) => {
+        this.pageSize = 10;
+        this.filter = this.defaultFilter;
         console.error('Error fetching students:', error);
       },
     });
@@ -103,12 +107,12 @@ export class StudentComponent {
       cancelButtonText: 'Cancel',
     }).then((result: any) => {
       if (result.isConfirmed) {
-        localStorage.clear();
-        this.router.navigate(['/login']);
+        this.authService.logout();
       }
     });
   }
 
+  // this is automatically called when onEntriesClear is called
   onEntriesChange() {
     this.filter = {
       ...this.filter,
@@ -121,7 +125,6 @@ export class StudentComponent {
   onEntriesClear() {
     this.selectedEntry = 10;
     this.pageSize = 10;
-    this.onEntriesChange();
   }
 
   sortTable(column: string) {
@@ -176,7 +179,7 @@ export class StudentComponent {
       maxAge: this.selectedMaxAge,
     };
 
-    this.fetchStudents(this.filter);
+    // this.fetchStudents(this.filter);
     this.goToFirstPage();
   }
 

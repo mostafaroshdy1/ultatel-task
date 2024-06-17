@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, Subject } from 'rxjs';
 import { environment } from '../environments/environment.development';
 import { Router } from '@angular/router';
+import Swal from 'sweetalert2';
 
 @Injectable({
   providedIn: 'root',
@@ -36,6 +37,10 @@ export class AuthService {
   get isLoggedIn(): boolean {
     return !!localStorage.getItem('token');
   }
+  logout() {
+    localStorage.clear();
+    this.router.navigate(['/login']);
+  }
 
   refreshToken() {
     const refreshToken = localStorage.getItem('refreshToken');
@@ -50,11 +55,15 @@ export class AuthService {
           localStorage.setItem('refreshToken', res.refresh_token);
         },
         (error) => {
-          console.log('asfasf');
-
-          localStorage.clear();
-          this.router.navigate(['/login']);
-          // alert('Your session has expired. Please log in again.');
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Too late , please login again!',
+          }).then((result) => {
+            if (result.isConfirmed) {
+              this.logout();
+            }
+          });
         }
       );
   }
