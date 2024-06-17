@@ -37,14 +37,10 @@ export class UserEntity implements User {
   activationToken: string;
 
   @Exclude()
-  @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  @CreateDateColumn()
   createdAt: Date;
 
   @Exclude()
-  @UpdateDateColumn({
-    type: 'timestamp',
-    default: () => 'CURRENT_TIMESTAMP',
-    onUpdate: 'CURRENT_TIMESTAMP',
-  })
+  @UpdateDateColumn()
   updatedAt: Date;
 }

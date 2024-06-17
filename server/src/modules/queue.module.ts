@@ -12,6 +12,7 @@ import { ConfigModule } from '@nestjs/config';
       redis: {
         host: process.env.REDIS_HOST,
         port: parseInt(process.env.REDIS_PORT),
+        password: process.env.REDIS_PASSWORD,
       },
     }),
     BullModule.registerQueue({
