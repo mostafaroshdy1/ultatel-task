@@ -128,14 +128,26 @@
         >
           Previous
         </button>
+        <span
+          *ngIf="shouldShowEllipsisBefore()"
+          class="ellipsis"
+          style="color: #1e6ac3"
+          >....</span
+        >
         <button
-          *ngFor="let page of pagesArray()"
+          *ngFor="let page of displayedPages()"
           class="btn mx-3 d-lg-block d-none"
           [class.num-btn-selected]="currentPage === page"
           (click)="goToPage(page)"
         >
           {{ page }}
         </button>
+        <span
+          *ngIf="shouldShowEllipsisAfter()"
+          class="ellipsis"
+          style="color: #1e6ac3"
+          >....</span
+        >
         <button
           class="btn mx-3"
           [class.disabled]="currentPage === totalPages"
@@ -267,8 +279,14 @@
           >
             Previous
           </button>
+          <span
+            *ngIf="shouldShowEllipsisBefore()"
+            class="ellipsis"
+            style="color: #1e6ac3"
+            >....</span
+          >
           <button
-            *ngFor="let page of pagesArray()"
+            *ngFor="let page of displayedPages()"
             class="btn mx-3 d-lg-block d-none"
             [class.num-btn-selected]="currentPage === page"
             (click)="goToPage(page)"

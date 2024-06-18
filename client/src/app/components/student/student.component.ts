@@ -9,7 +9,7 @@ import { StudentModalComponent } from '../student-modal/student-modal.component'
 import { StudentService } from '../../../services/student.service';
 import Swal from 'sweetalert2';
 import { AgePipe } from '../../../pipes/age.pipe';
-import { catchError, finalize, of } from 'rxjs';
+import { catchError, finalize, last, of } from 'rxjs';
 import { AuthService } from '../../../services/auth.service';
 
 @Component({
@@ -77,6 +77,26 @@ export class StudentComponent {
     });
   }
 
+  displayedPages(): number[] {
+    let startPage = Math.floor((this.currentPage - 1) / 10) * 10 + 1;
+    let endPage = startPage + 9;
+
+    if (endPage > this.totalPages) {
+      endPage = this.totalPages;
+    }
+
+    return this.pagesArray().slice(startPage - 1, endPage);
+  }
+  shouldShowEllipsisAfter(): boolean {
+    const lastPageInCurrentRange =
+      Math.floor((this.currentPage - 1) / 10) * 10 + 10;
+    return lastPageInCurrentRange < this.totalPages;
+  }
+  shouldShowEllipsisBefore(): boolean {
+    const firstPageInCurrentRange =
+      Math.floor((this.currentPage - 1) / 10) * 10 + 1;
+    return firstPageInCurrentRange > 1;
+  }
   pagesArray(): number[] {
     return Array.from({ length: this.totalPages }, (_, i) => i + 1);
   }
@@ -114,17 +134,24 @@ export class StudentComponent {
 
   // this is automatically called when onEntriesClear is called
   onEntriesChange() {
+    if (this.pageSize < 10) this.pageSize = 10;
     this.filter = {
       ...this.filter,
       limit: this.pageSize,
       offset: this.pageSize * (this.currentPage - 1),
     };
+
     this.goToFirstPage();
   }
 
   onEntriesClear() {
     this.selectedEntry = 10;
     this.pageSize = 10;
+    this.filter = {
+      ...this.filter,
+      limit: this.pageSize,
+      offset: this.pageSize * (this.currentPage - 1),
+    };
   }
 
   sortTable(column: string) {
@@ -150,6 +177,7 @@ export class StudentComponent {
         offset: this.filter.limit * (page - 1),
       };
     }
+
     this.fetchStudents(this.filter);
   }
 
