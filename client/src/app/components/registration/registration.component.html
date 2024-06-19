@@ -181,7 +181,19 @@
                 Passwords do not match.
               </div>
             </div>
-            <button type="submit" class="btn btn-primary w-100 py-2">
+
+            <div class="pb-3">
+              <re-captcha
+                #captchaElem
+                (resolved)="resolvedCaptcha($event)"
+                siteKey="{{ captchaSiteKey }}"
+              ></re-captcha>
+            </div>
+            <button
+              type="submit"
+              class="btn btn-primary w-100 py-2"
+              [disabled]="!registerForm.valid || !captchaResolved"
+            >
               Register
             </button>
             <div class="w-100 text-center pt-4">
@@ -223,7 +235,7 @@
             class="resend-btn btn p-0 m-0 ps-1"
             (click)="resendConfirmationEmail()"
           >
-            Resend Confirmation 
+            Resend Confirmation
           </button>
         </p>
         <p *ngIf="emailResent" class="email-resent-text">

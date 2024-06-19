@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import {
   AbstractControlOptions,
   FormBuilder,
@@ -10,17 +10,20 @@ import {
 import { RouterModule } from '@angular/router';
 import { AuthService } from '../../../services/auth.service';
 import { catchError, of, tap, throttleTime } from 'rxjs';
+import { RecaptchaModule } from 'ng-recaptcha';
+import { environment } from '../../../environments/environment.development';
 
 @Component({
   selector: 'app-registration',
   standalone: true,
-  imports: [ReactiveFormsModule, CommonModule, RouterModule],
+  imports: [ReactiveFormsModule, CommonModule, RouterModule, RecaptchaModule],
   providers: [AuthService],
   templateUrl: './registration.component.html',
   styleUrls: ['./registration.component.css'],
 })
 export class RegistrationComponent {
   registerForm: FormGroup;
+  captchaSiteKey: string;
   showPassword = false;
   emailToken = '';
   emailResent = false;
@@ -36,8 +39,13 @@ export class RegistrationComponent {
     hasLowerCase: false,
     hasSymbol: false,
   };
-
+  captcha: string;
+  captchaResolved: boolean = false;
+  @ViewChild('captchaElem') captchaElem: any;
   constructor(private fb: FormBuilder, private authService: AuthService) {
+    this.captchaSiteKey = environment.captchaSiteKey;
+
+    this.captcha = '';
     this.registerForm = this.fb.group(
       {
         fullName: ['', Validators.required],
@@ -47,6 +55,19 @@ export class RegistrationComponent {
       },
       { validators: this.passwordMatchValidator } as AbstractControlOptions
     );
+  }
+
+  resolvedCaptcha(captchaResponse: any): void {
+    this.captcha = captchaResponse;
+    this.captchaResolved = true;
+  }
+  resetCaptcha(): void {
+    this.captchaResolved = false;
+    this.captcha = '';
+    console.log(this.captcha);
+    if (this.captchaElem) {
+      this.captchaElem.reset();
+    }
   }
 
   togglePasswordVisibility(): void {
@@ -109,7 +130,7 @@ export class RegistrationComponent {
   onSubmit(): void {
     if (this.registerForm.valid) {
       const user = this.registerForm.value;
-
+      user.recaptcha = this.captcha;
       this.authService.register(user).subscribe({
         next: (response) => {
           if (response.email) {
@@ -118,6 +139,7 @@ export class RegistrationComponent {
           }
         },
         error: (error) => {
+          this.resetCaptcha();
           this.emailTaken = error.error.message === 'Email already exists';
         },
       });

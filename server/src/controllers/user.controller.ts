@@ -19,6 +19,7 @@ import { plainToInstance } from 'class-transformer';
 import { AuthGuard } from 'src/common/guards/auth.guard';
 import { UpdateUserDto } from 'src/dtos/update-user.dto';
 import { MailingService } from 'src/services/mailing.service';
+import { Recaptcha } from '@nestlab/google-recaptcha';
 
 @Controller('user')
 export class UserController {
@@ -29,8 +30,10 @@ export class UserController {
 
   @ApiCreatedResponse({ type: UserEntity })
   @ApiTags('user')
+  @Recaptcha()
   @Post()
   async create(@Body() createUserDto: CreateUserDto) {
+    // console.log(req.body.recaptcha);
     const activationToken = this.userService.generateRandomToken();
     const createdUser = await this.userService.create(
       createUserDto,
