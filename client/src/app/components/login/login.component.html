@@ -38,7 +38,8 @@
 
                 <a
                   *ngIf="resendConfirmation"
-                  routerLink="/register"
+                  (click)="resendConfirmationEmail()"
+                  routerLink=""
                   class="sm-register-btn register-btn"
                   >,Resend Email</a
                 >
