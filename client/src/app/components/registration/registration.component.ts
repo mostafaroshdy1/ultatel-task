@@ -152,7 +152,6 @@ export class RegistrationComponent {
           this.emailTaken = error.error.message === 'Email already exists';
           this.registerAttempt = false;
           this.resetCaptcha();
-          this.registerAttempt = true;
         },
       });
     } else {
