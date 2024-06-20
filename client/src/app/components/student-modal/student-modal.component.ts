@@ -180,11 +180,11 @@ export class StudentModalComponent {
             });
           },
           error: (error: any) => {
-            if (error.error.message == 'Email is already taken') {
+            if (error.error.message == 'Email already exists') {
               Swal.fire({
                 icon: 'error',
                 title: 'Error',
-                text: 'Email is already taken',
+                text: 'Email already exists',
                 confirmButtonText: 'OK',
               });
             }
