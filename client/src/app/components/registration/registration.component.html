@@ -192,8 +192,14 @@
             <button
               type="submit"
               class="btn btn-primary w-100 py-2"
-              [disabled]="!registerForm.valid || !captchaResolved"
+              [disabled]="registerAttempt"
             >
+              <span
+                [hidden]="!registerAttempt"
+                class="spinner-border spinner-border-sm"
+                role="status"
+                aria-hidden="true"
+              ></span>
               Register
             </button>
             <div class="w-100 text-center pt-4">

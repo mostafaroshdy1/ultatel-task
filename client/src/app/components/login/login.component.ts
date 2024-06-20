@@ -26,6 +26,7 @@ export class LoginComponent {
   showPassword = false;
   user: any;
   resendConfirmation = false;
+  loginAttempt = false;
   constructor(
     private readonly fb: FormBuilder,
     private readonly authService: AuthService,
@@ -39,6 +40,13 @@ export class LoginComponent {
 
   togglePasswordVisibility(): void {
     this.showPassword = !this.showPassword;
+  }
+
+  disableLoginBtn() {
+    this.loginAttempt = true;
+    setTimeout(() => {
+      this.loginAttempt = false;
+    }, 4000);
   }
 
   markAllAsTouched(formGroup: FormGroup): void {
@@ -57,6 +65,7 @@ export class LoginComponent {
 
     if (this.loginForm.valid) {
       this.user = this.loginForm.value;
+      this.disableLoginBtn();
 
       this.authService.login(this.user).subscribe({
         next: (response: any) => {
@@ -66,14 +75,16 @@ export class LoginComponent {
         },
         error: (error: any) => {
           console.error('Login error:', error);
-
           if (error.error.statusCode === 403) {
+            this.loginAttempt = false;
             this.emailErrorMessage = 'Email is not confirmed ';
             this.resendConfirmation = true;
           } else if (error.error.statusCode === 404) {
+            this.loginAttempt = false;
             this.emailErrorMessage = `Email doesn't exist`;
             this.showAnchorTag = true;
           } else if (error.error.statusCode === 401) {
+            this.loginAttempt = false;
             this.passwordErrorMessage = 'Wrong Password';
           }
         },

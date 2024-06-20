@@ -41,6 +41,8 @@ export class RegistrationComponent {
   };
   captcha: string;
   captchaResolved: boolean = false;
+  registerAttempt = false;
+
   @ViewChild('captchaElem') captchaElem: any;
   constructor(private fb: FormBuilder, private authService: AuthService) {
     this.captchaSiteKey = environment.captchaSiteKey;
@@ -68,6 +70,13 @@ export class RegistrationComponent {
     if (this.captchaElem) {
       this.captchaElem.reset();
     }
+  }
+
+  disableRegisterBtn() {
+    this.registerAttempt = true;
+    setTimeout(() => {
+      this.registerAttempt = false;
+    }, 4000);
   }
 
   togglePasswordVisibility(): void {
@@ -129,6 +138,7 @@ export class RegistrationComponent {
 
   onSubmit(): void {
     if (this.registerForm.valid) {
+      this.disableRegisterBtn();
       const user = this.registerForm.value;
       user.recaptcha = this.captcha;
       this.authService.register(user).subscribe({
@@ -139,8 +149,10 @@ export class RegistrationComponent {
           }
         },
         error: (error) => {
-          this.resetCaptcha();
           this.emailTaken = error.error.message === 'Email already exists';
+          this.registerAttempt = false;
+          this.resetCaptcha();
+          this.registerAttempt = true;
         },
       });
     } else {

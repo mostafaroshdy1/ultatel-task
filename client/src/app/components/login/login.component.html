@@ -86,7 +86,17 @@
               </div>
             </div>
 
-            <button type="submit" class="btn btn-primary w-100 py-2">
+            <button
+              type="submit"
+              class="btn btn-primary w-100 py-2"
+              [disabled]="loginAttempt"
+            >
+              <span
+                [hidden]="!loginAttempt"
+                class="spinner-border spinner-border-sm"
+                role="status"
+                aria-hidden="true"
+              ></span>
               Login
             </button>
             <div class="w-100 text-center pt-4">
