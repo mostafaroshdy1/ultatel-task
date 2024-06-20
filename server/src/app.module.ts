@@ -21,7 +21,7 @@ import { GoogleRecaptchaModule } from '@nestlab/google-recaptcha';
     GoogleRecaptchaModule.forRoot({
       secretKey: process.env.GOOGLE_RECAPTCHA_SECRET_KEY,
       response: (req) => req.body.recaptcha,
-      // skipIf: process.env.NODE_ENV !== 'production',
+      skipIf: process.env.NODE_ENV !== 'production',
     }),
   ],
   controllers: [AppController],
