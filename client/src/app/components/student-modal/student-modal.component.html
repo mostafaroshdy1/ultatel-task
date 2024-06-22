@@ -1,12 +1,6 @@
 <div class="modal-header f-flex justify-content-between">
   <h6 class="modal-title">{{ modalTitle }}</h6>
-  <button
-    type="button"
-    class="close"
-    aria-label="Close"
-    class="btn btn-light"
-    (click)="closeModal()"
-  >
+  <button type="button" class="close" aria-label="Close" (click)="closeModal()">
     <i class="fa fa-close"></i>
   </button>
 </div>
@@ -114,40 +108,36 @@
     </div>
     <div class="form-group border-1">
       <label for="birthdate">Birthdate</label>
-      <form class="row row-cols-sm-auto">
-        <div class="col-12">
-          <div class="input-group calendar">
-            <input
-              class="form-control"
-              placeholder="yyyy-mm-dd"
-              name="dp"
-              [(ngModel)]="student.birthDate"
-              ngbDatepicker
-              #d="ngbDatepicker"
-              [maxDate]="{ year: 2020, month: 12, day: 31 }"
-              [minDate]="{ year: 1950, month: 1, day: 1 }"
-            />
-            <button
-              class="btn btn-outline-secondary"
-              (click)="d.toggle()"
-              type="button"
-            >
-              <i class="fa fa-calendar"></i>
-            </button>
-          </div>
-        </div>
-      </form>
+      <div class="input-group calendar">
+        <input
+          class="form-control"
+          placeholder="yyyy-mm-dd"
+          name="dp"
+          [(ngModel)]="student.birthDate"
+          ngbDatepicker
+          #d="ngbDatepicker"
+          [maxDate]="{ year: 2020, month: 12, day: 31 }"
+          [minDate]="{ year: 1950, month: 1, day: 1 }"
+        />
+        <button
+          class="btn btn-outline-secondary"
+          (click)="d.toggle()"
+          type="button"
+        >
+          <i class="fa fa-calendar"></i>
+        </button>
+      </div>
+      <div
+        *ngIf="
+          studentForm.get('birthDate')?.invalid &&
+          studentForm.get('birthDate')?.touched
+        "
+        class="text-danger"
+      >
+        Birthdate is required.
+      </div>
     </div>
   </form>
-  <div
-    *ngIf="
-      studentForm.get('birthDate')?.invalid &&
-      studentForm.get('birthDate')?.touched
-    "
-    class="text-danger"
-  >
-    Birthdate is required.
-  </div>
 </div>
 <div class="modal-footer">
   <button type="button" class="btn btn-success px-5" (click)="save()">

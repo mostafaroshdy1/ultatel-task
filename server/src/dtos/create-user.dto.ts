@@ -28,6 +28,7 @@ export class CreateUserDto implements User {
   confirmPassword: string;
 
   activationToken: string;
+  resetToken: string;
   activated: boolean;
   createdAt: Date;
   updatedAt: Date;

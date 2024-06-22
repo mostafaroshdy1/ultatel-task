@@ -11,12 +11,15 @@ import { User } from 'src/models/user.model';
 import { SignInDto } from 'src/dtos/signIn-dto';
 import { RefreshTokenDto } from 'src/dtos/refresh-token.dto';
 import { SignInResponseDto } from 'src/dtos/sign-in-response.dto';
+import { MailingService } from './mailing.service';
+import { ResetPasswordDto } from 'src/dtos/reset-password.dto';
 
 @Injectable()
 export class AuthService {
   constructor(
     private userService: UserService,
     private jwtService: JwtService,
+    private mailingService: MailingService,
   ) {}
 
   async signIn(
@@ -65,5 +68,35 @@ export class AuthService {
       access_token,
       refresh_token,
     };
+  }
+
+  async resetPassword(email: string): Promise<void> {
+    const user = await this.userService.findOneByEmail(email);
+    if (!user) throw new NotFoundException('User not found');
+    try {
+      const token = this.userService.generateRandomToken();
+      this.mailingService.queuePasswordReset(user, token);
+      const hashedToken = await this.userService.hash(token);
+      await this.userService.update(user.id, { resetToken: hashedToken });
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  async changePassword(data: ResetPasswordDto): Promise<User> {
+    const user = await this.userService.findOne(data.userId);
+
+    if (!user) throw new NotFoundException('User not found');
+
+    if (!user.resetToken) throw new UnauthorizedException('Expired token');
+
+    if (!(await bcrypt.compare(data.token, user.resetToken)))
+      throw new UnauthorizedException('Invalid token');
+
+    const hashedPassword = await this.userService.hash(data.password);
+    return this.userService.update(user.id, {
+      password: hashedPassword,
+      resetToken: null,
+    });
   }
 }

@@ -55,7 +55,6 @@ export class StudentComponent {
 
   constructor(
     private http: HttpClient,
-    private router: Router,
     private studentService: StudentService,
     private modalService: NgbModal,
     private authService: AuthService
@@ -170,8 +169,11 @@ export class StudentComponent {
   }
 
   goToPage(page: number) {
+    this.currentPage = page;
+    console.log('page:', page);
+    console.log('curr:', this.currentPage);
+
     if (page >= 1 && page <= this.totalPages) {
-      this.currentPage = page;
       this.filter = {
         ...this.filter,
         offset: this.filter.limit * (page - 1),

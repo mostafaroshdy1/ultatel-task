@@ -4,7 +4,7 @@ import * as handlebars from 'handlebars';
 import * as fs from 'fs';
 import * as path from 'path';
 import { UserEntity } from 'src/entities/user.entity';
-import { InjectQueue } from '@nestjs/bull';
+import { InjectQueue, Process } from '@nestjs/bull';
 import { Queue } from 'bull';
 
 @Injectable()
@@ -12,7 +12,6 @@ export class MailingService {
   private transporter: nodemailer.Transporter;
   private confirmationTemplate: handlebars.TemplateDelegate;
   private passwordResetTemplate: handlebars.TemplateDelegate;
-  private groupInviteTemplate: handlebars.TemplateDelegate;
 
   constructor(@InjectQueue('mail') private readonly mailQueue: Queue) {
     this.transporter = nodemailer.createTransport(
@@ -35,6 +34,7 @@ export class MailingService {
 
     // Load Handlebars templates
     this.confirmationTemplate = this.loadTemplate('confirmation.hbs');
+    this.passwordResetTemplate = this.loadTemplate('resetPasswordEmail.hbs');
   }
 
   private loadTemplate(templateName: string): handlebars.TemplateDelegate {
@@ -45,6 +45,7 @@ export class MailingService {
     return handlebars.compile(templateSource);
   }
 
+  @Process('sendUserConfirmation')
   async sendUserConfirmation(user: UserEntity, token: string) {
     const url = `${process.env.CLIENT_URL}/verify-email/${user.id}/${token}`;
     const html = this.confirmationTemplate({ name: user.fullName, url });
@@ -54,8 +55,21 @@ export class MailingService {
       html: html,
     });
   }
+  @Process('sendPasswordReset')
+  async sendPasswordReset(user: UserEntity, token: string) {
+    const url = `${process.env.CLIENT_URL}/resetpassword/${user.id}/${token}`;
+    const html = this.passwordResetTemplate({ name: user.fullName, url });
+    await this.transporter.sendMail({
+      to: user.email,
+      subject: 'Reset your password',
+      html: html,
+    });
+  }
 
   async queueUserConfirmation(user: UserEntity, token: string) {
-    return this.mailQueue.add({ user, token });
+    return this.mailQueue.add(this.sendUserConfirmation(user, token));
+  }
+  async queuePasswordReset(user: UserEntity, token: string) {
+    return this.mailQueue.add(this.sendPasswordReset(user, token));
   }
 }

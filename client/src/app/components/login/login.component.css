@@ -1,46 +1,89 @@
-.container-fluid {
-  background-color: #f6f5fa;
+.full-page-container {
+  background-color: #eef1f7;
   min-height: 100vh;
-  padding-bottom: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
 }
 
-h4,
-label,
-input::placeholder {
-  color: #878787;
+.card-container {
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  max-width: 450px;
+  width: 100%;
+  padding: 40px 30px;
 }
 
-label {
-  font-weight: 500;
+.logo-wrapper {
+  text-align: center;
+  margin-bottom: 30px;
 }
 
-.btn-primary {
-  background-color: #1e6ac3;
-  border-radius: 10px;
-  font-size: 17px;
+.logo-wrapper img {
+  width: 150px;
 }
 
-.password-container {
+.title-text {
+  font-size: 24px;
+  font-weight: bold;
+  color: #333333;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.form-label {
+  color: #555555;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.form-control {
+  border: 1px solid #cccccc;
+  border-radius: 8px;
+  padding: 10px;
+}
+
+.custom-btn {
+  background-color: #185a9d;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-size: 18px;
+  padding: 12px;
+  cursor: pointer;
+  width: 100%;
+}
+
+.custom-btn:disabled {
+  background-color: #cccccc;
+}
+
+.password-wrapper {
   position: relative;
 }
 
-.register-btn {
-  color: #1e6ac3;
-  font-size: 20px;
-  font-weight: 500;
-}
-.sm-register-btn {
-  font-size: 15px;
-}
-
-.toggle-password {
+.show-password-icon {
+  position: absolute;
   top: 50%;
-  right: 10px;
+  right: 12px;
   cursor: pointer;
   transform: translateY(-50%);
+  color: #555555;
 }
 
-.toggle-password i {
-  color: #878787;
+.text-danger {
+  color: #d9534f;
+  margin-top: 5px;
 }
 
+.alt-link {
+  color: #185a9d;
+  font-size: 16px;
+  font-weight: 600;
+  display: block;
+  text-align: center;
+  margin-top: 15px;
+  text-decoration: none;
+}

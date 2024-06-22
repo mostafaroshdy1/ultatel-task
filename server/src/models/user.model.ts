@@ -4,6 +4,7 @@ export interface User {
   email: string;
   password: string;
   activationToken: string;
+  resetToken: string;
   activated: boolean;
   createdAt: Date;
   updatedAt: Date;

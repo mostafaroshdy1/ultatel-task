@@ -37,6 +37,10 @@ export class UserEntity implements User {
   activationToken: string;
 
   @Exclude()
+  @Column({ nullable: true })
+  resetToken: string;
+
+  @Exclude()
   @CreateDateColumn()
   createdAt: Date;
 

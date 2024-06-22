@@ -1,10 +1,10 @@
-<div class="container-fluid p-xl-5 p-sm-4 p-3 pt-3">
-  <div class="header row justify-content-between align-items-baseline">
+<div class="container-fluid p-xl-4 p-sm-3 p-2 pt-2">
+  <div class="header-custom row justify-content-between align-items-baseline">
     <div class="image col-xl-2 col-md-3 col-sm-4 col-7">
       <img src="assets/logo.svg" class="img-fluid" alt="" />
     </div>
     <button
-      class="btn btn-danger col-xl-1 col-sm-2 col-3 me-2"
+      class="btn btn-logout col-xl-1 col-sm-2 col-3 me-2"
       (click)="logout()"
     >
       Logout
@@ -112,7 +112,7 @@
         </ng-select>
       </div>
       <div
-        class="right mt-xl-0 mt-5 col-xl-9 col-lg-12 col-sm-6 d-flex justify-content-xl-end justify-content-center align-items-center overflow-x-auto"
+        class="right-custom mt-xl-0 mt-5 col-xl-9 col-lg-12 col-sm-6 d-flex justify-content-xl-end justify-content-center align-items-center overflow-x-auto"
       >
         <button
           class="btn mx-3"
@@ -128,12 +128,7 @@
         >
           Previous
         </button>
-        <span
-          *ngIf="shouldShowEllipsisBefore()"
-          class="ellipsis"
-          style="color: #1e6ac3"
-          >....</span
-        >
+        <span *ngIf="shouldShowEllipsisBefore()" class="ellipsis">....</span>
         <button
           *ngFor="let page of displayedPages()"
           class="btn mx-3 d-lg-block d-none"
@@ -142,12 +137,7 @@
         >
           {{ page }}
         </button>
-        <span
-          *ngIf="shouldShowEllipsisAfter()"
-          class="ellipsis"
-          style="color: #1e6ac3"
-          >....</span
-        >
+        <span *ngIf="shouldShowEllipsisAfter()" class="ellipsis">....</span>
         <button
           class="btn mx-3"
           [class.disabled]="currentPage === totalPages"
@@ -164,7 +154,6 @@
         </button>
       </div>
     </div>
-
     <div class="table-content overflow-x-auto mt-5">
       <table class="table">
         <thead>
@@ -256,14 +245,14 @@
       >
         <div class="left col-xl-3 row text-center">
           <p>
-            Showing <span>{{ (currentPage - 1) * pageSize + 1 }}</span>
-            to
-            <span>{{ getMaxRange() }}</span>
-            of <span>{{ totalEntries }}</span> entries
+            Showing <span>{{ (currentPage - 1) * pageSize + 1 }}</span> to
+            <span>{{ getMaxRange() }}</span> of
+            <span>{{ totalEntries }}</span>
+            entries
           </p>
         </div>
         <div
-          class="right col-xl-9 d-flex justify-content-xl-end justify-content-center align-items-center overflow-x-auto"
+          class="right-custom col-xl-9 d-flex justify-content-xl-end justify-content-center align-items-center overflow-x-auto"
         >
           <button
             class="btn mx-3"
@@ -279,12 +268,7 @@
           >
             Previous
           </button>
-          <span
-            *ngIf="shouldShowEllipsisBefore()"
-            class="ellipsis"
-            style="color: #1e6ac3"
-            >....</span
-          >
+          <span *ngIf="shouldShowEllipsisBefore()" class="ellipsis">....</span>
           <button
             *ngFor="let page of displayedPages()"
             class="btn mx-3 d-lg-block d-none"
@@ -293,7 +277,7 @@
           >
             {{ page }}
           </button>
-
+          <span *ngIf="shouldShowEllipsisAfter()" class="ellipsis">....</span>
           <button
             class="btn mx-3"
             [class.disabled]="currentPage === totalPages"
