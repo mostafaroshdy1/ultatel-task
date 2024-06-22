@@ -1,5 +1,5 @@
 <div class="full-page-container">
-  <div class="card-container">
+  <div class="card-container" *ngIf="!emailConfirmation">
     <div class="logo-wrapper">
       <img src="assets/logo.svg" alt="logo" />
     </div>
@@ -160,33 +160,33 @@
         <a routerLink="/login" class="confirm-login-btn">Login</a>
       </div>
     </form>
-    <div *ngIf="emailConfirmation" class="email-confirmation">
-      <div class="text-center">
-        <img src="assets/email.png" width="150px" alt="email confirmation" />
-        <h1>Email Confirmation</h1>
-        <p class="confirm-text">
-          We have sent an email to
-          <span *ngIf="registerForm.value.email" class="user-email">{{
-            registerForm.value.email
-          }}</span>
-          to confirm the validity of your email address. After receiving the
-          email, follow the link provided to complete your registration.
-        </p>
-        <p class="confirm-text">
-          Confirmed?
-          <a routerLink="/login" class="confirm-login-btn">Login now!</a>
-        </p>
-        <div class="separator"></div>
-        <p class="confirm-text">
-          Didn't receive any mail?
-          <button class="resend-btn" (click)="resendConfirmationEmail()">
-            Resend Confirmation
-          </button>
-        </p>
-        <p *ngIf="emailResent" class="email-resent-text">
-          Email has been resent successfully!
-        </p>
-      </div>
+  </div>
+  <div class="card-container" *ngIf="emailConfirmation">
+    <div class="text-center">
+      <img src="assets/email.png" width="150px" alt="email confirmation" />
+      <h1>Email Confirmation</h1>
+      <p class="confirm-text">
+        We have sent an email to
+        <span *ngIf="registerForm.value.email" class="user-email">{{
+          registerForm.value.email
+        }}</span>
+        to confirm the validity of your email address. After receiving the
+        email, follow the link provided to complete your registration.
+      </p>
+      <p class="confirm-text">
+        Confirmed?
+        <a routerLink="/login" class="confirm-login-btn">Login now!</a>
+      </p>
+      <div class="separator"></div>
+      <p class="confirm-text">
+        Didn't receive any mail?
+        <button class="resend-btn btn" (click)="resendConfirmationEmail()">
+          Resend Confirmation
+        </button>
+      </p>
+      <p *ngIf="emailResent" class="email-resent-text">
+        Email has been resent successfully!
+      </p>
     </div>
   </div>
 </div>
