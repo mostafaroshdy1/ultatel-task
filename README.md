@@ -1,6 +1,6 @@
 # Ultatel-task- Student-Manager
 
-https://github.com/mostafaroshdy1/ultatel-task/assets/66712535/3db525db-1ce0-499a-bf38-311aaa483272
+https://github.com/mostafaroshdy1/ultatel-task/assets/66712535/b4a91fee-06ab-4880-9b75-6aa1463c1025
 
 ## Features
 
@@ -10,6 +10,7 @@ https://github.com/mostafaroshdy1/ultatel-task/assets/66712535/3db525db-1ce0-499
 - Email confimation built using Nestjs Queue with Redis to optimize response time
 - Applied repo/service design pattern with layered architecture in nestjs for clean code
 - Implemented google ReCaptcha V2 to improve security against spams
+- Password Reset feature
 
 ## Live Demo
 
