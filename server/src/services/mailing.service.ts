@@ -67,9 +67,9 @@ export class MailingService {
   }
 
   async queueUserConfirmation(user: UserEntity, token: string) {
-    return this.mailQueue.add(this.sendUserConfirmation(user, token));
+    return this.mailQueue.add('sendUserConfirmation', { user, token });
   }
   async queuePasswordReset(user: UserEntity, token: string) {
-    return this.mailQueue.add(this.sendPasswordReset(user, token));
+    return this.mailQueue.add('sendPasswordReset', { user, token });
   }
 }
