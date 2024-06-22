@@ -15,7 +15,7 @@ https://github.com/mostafaroshdy1/ultatel-task/assets/66712535/b4a91fee-06ab-488
 ## Live Demo
 
 - checkout API documentation here : https://ultatel-task-production.up.railway.app/api
-- Fullu working deployment : https://ultatel-task.vercel.app
+- Fully working deployment : https://ultatel-task.vercel.app
 
 ## Setup
 
