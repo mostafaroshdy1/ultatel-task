@@ -29,8 +29,8 @@ export class AuthController {
     description: 'Password reset link sent successfully',
   })
   @Get('resetpassword/:email')
-  async resetPassword(@Param('email') id: string) {
-    await this.authService.resetPassword(id);
+  async resetPassword(@Param('email') email: string) {
+    await this.authService.resetPassword(email);
     return { message: 'Password reset link sent successfully' };
   }
 

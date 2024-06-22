@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../environments/environment.development';
-
+import { FilterStudent } from '../interfaces/filterStudent.interface';
 @Injectable({
   providedIn: 'root',
 })
@@ -11,7 +11,7 @@ export class StudentService {
 
   constructor(private http: HttpClient) {}
 
-  getAllStudents(filters: any): Observable<any[]> {
+  getAllStudents(filters: FilterStudent): Observable<any[]> {
     let params = new HttpParams();
 
     // Add query parameters

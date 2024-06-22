@@ -8,7 +8,7 @@ import {
 import { AuthService } from '../../../services/auth.service';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
-import Swal from 'sweetalert2';
+import { AlertService } from '../../../services/alert.service';
 
 @Component({
   selector: 'app-password-reset-form',
@@ -16,6 +16,7 @@ import Swal from 'sweetalert2';
   styleUrls: ['./password-reset.component.css'],
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
+  providers: [AlertService],
 })
 export class PasswordResetFormComponent implements OnInit {
   passwordResetForm: FormGroup;
@@ -37,7 +38,8 @@ export class PasswordResetFormComponent implements OnInit {
     private readonly fb: FormBuilder,
     private readonly authService: AuthService,
     private readonly route: ActivatedRoute,
-    private readonly router: Router
+    private readonly router: Router,
+    private readonly alertService: AlertService
   ) {
     this.passwordResetForm = this.fb.group({
       password: [
@@ -93,17 +95,16 @@ export class PasswordResetFormComponent implements OnInit {
         .resetPassword(password, this.token, this.userId)
         .subscribe({
           next: () => {
-            Swal.fire({
-              icon: 'success',
-              title: 'Password Reset Successful!',
-              text: 'Your password has been reset successfully.',
-              confirmButtonColor: '#3085d6',
-              confirmButtonText: 'OK',
-            }).then((result) => {
-              if (result.isConfirmed) {
-                this.router.navigate(['/login']);
-              }
-            });
+            this.alertService
+              .success(
+                'Your password has been reset successfully.',
+                'Password Reset Successful!'
+              )
+              .then((result) => {
+                if (result.isConfirmed) {
+                  this.router.navigate(['/login']);
+                }
+              });
           },
           error: (error) => {
             let errorMessage =
@@ -111,13 +112,7 @@ export class PasswordResetFormComponent implements OnInit {
             if (error.error.statusCode === 401) {
               errorMessage = 'Expired token. Please try again.';
             }
-            Swal.fire({
-              icon: 'error',
-              title: 'Password Reset Failed!',
-              text: errorMessage,
-              confirmButtonColor: '#d33',
-              confirmButtonText: 'OK',
-            });
+            this.alertService.error(errorMessage, 'Password Reset Failed!');
           },
         });
     } else {

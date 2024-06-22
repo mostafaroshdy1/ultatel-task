@@ -6,10 +6,10 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import Swal from 'sweetalert2';
+
 import { AuthService } from '../../../services/auth.service';
 import { Router } from '@angular/router';
+import { AlertService } from '../../../services/alert.service';
 
 @Component({
   selector: 'app-forgot-password',
@@ -17,16 +17,16 @@ import { Router } from '@angular/router';
   styleUrls: ['./forgot-password.component.css'],
   standalone: true,
   imports: [ReactiveFormsModule, CommonModule],
-  providers: [AuthService],
+  providers: [AuthService, AlertService],
 })
 export class ForgotPasswordComponent {
   forgotPasswordForm: FormGroup;
 
   constructor(
     private fb: FormBuilder,
-    private modalService: NgbModal,
     private readonly router: Router,
-    private readonly authService: AuthService
+    private readonly authService: AuthService,
+    private readonly alertService: AlertService
   ) {
     this.forgotPasswordForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
@@ -45,18 +45,17 @@ export class ForgotPasswordComponent {
       this.authService
         .forgetPassword(this.forgotPasswordForm.value.email)
         .subscribe({
-          next: (res: any) => {
-            Swal.fire({
-              icon: 'success',
-              title: 'Password Reset Link Sent!',
-              text: 'Please check your email for further instructions.',
-              confirmButtonColor: '#3085d6',
-              confirmButtonText: 'OK',
-            }).then((result) => {
-              if (result.isConfirmed) {
-                this.router.navigate(['/login']);
-              }
-            });
+          next: () => {
+            this.alertService
+              .success(
+                'Please check your email for further instructions.',
+                "'Password Reset Link Sent!'"
+              )
+              .then((result) => {
+                if (result.isConfirmed) {
+                  this.router.navigate(['/login']);
+                }
+              });
           },
           error: (err: any) => {
             let errorMessage = 'Something went wrong.';
@@ -66,23 +65,11 @@ export class ForgotPasswordComponent {
               errorMessage = 'invalid Email';
             }
 
-            Swal.fire({
-              icon: 'error',
-              title: 'Oops...',
-              text: errorMessage,
-              confirmButtonColor: '#3085d6',
-              confirmButtonText: 'OK',
-            });
+            this.alertService.error(errorMessage);
           },
         });
     } else {
-      Swal.fire({
-        icon: 'error',
-        title: 'Oops...',
-        text: 'Please enter a valid email address.',
-        confirmButtonColor: '#3085d6',
-        confirmButtonText: 'OK',
-      });
+      this.alertService.error('Please enter a valid email address.');
     }
   }
 }

@@ -4,11 +4,13 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { NgbDatepickerModule, NgbDateStruct } from '@ng-bootstrap/ng-bootstrap';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import Swal from 'sweetalert2';
 import { Output, EventEmitter } from '@angular/core';
 import { StudentService } from '../../../services/student.service';
+import { Country } from '../../../interfaces/country.interface';
+import { Student } from '../../../interfaces/student.interface';
+import { AlertService } from '../../../services/alert.service';
 
 @Component({
   selector: 'app-student-modal',
@@ -21,22 +23,22 @@ import { StudentService } from '../../../services/student.service';
     NgbModule,
     NgbDatepickerModule,
   ],
-  providers: [StudentService],
+  providers: [StudentService, AlertService],
   templateUrl: './student-modal.component.html',
   styleUrl: './student-modal.component.css',
 })
 export class StudentModalComponent {
   @Input() modalTitle: string = '';
-  @Input() student: any;
+  @Input() student: Student = {} as Student;
   @Output() studentUpdated = new EventEmitter<any>();
   @Output() studentAdded = new EventEmitter<any>();
-  countries: any[] = [];
+  countries: Country[] = [];
   isEditMode: boolean = false;
-  oldStudent: any;
-  studentId: any = '';
+  oldStudent: Student = {} as Student;
+  studentId: number = 0;
   birthDate: NgbDateStruct | null = null;
   studentForm: FormGroup;
-  originalStudentData: any;
+  originalStudentData: Student = {} as Student;
 
   genders = [
     { id: 1, name: 'male' },
@@ -47,7 +49,8 @@ export class StudentModalComponent {
     public activeModal: NgbActiveModal,
     private http: HttpClient,
     private fb: FormBuilder,
-    private studentService: StudentService
+    private studentService: StudentService,
+    private readonly alertService: AlertService
   ) {
     this.studentForm = this.fb.group({
       firstName: ['', Validators.required],
@@ -77,7 +80,7 @@ export class StudentModalComponent {
   }
 
   fetchCountries() {
-    this.http.get<any[]>('assets/countries.json').subscribe({
+    this.http.get<Country[]>('assets/countries.json').subscribe({
       next: (data) => {
         this.countries = data;
       },
@@ -98,7 +101,7 @@ export class StudentModalComponent {
     };
   }
 
-  populateFormForSave(student: any) {
+  populateFormForSave(student: Student) {
     this.studentForm.patchValue({
       firstName: student.firstName,
       lastName: student.lastName,
@@ -139,27 +142,19 @@ export class StudentModalComponent {
       if (this.isEditMode && this.student) {
         if (this.isFormValueChanged(this.student, this.originalStudentData)) {
           this.studentService
-            .updateStudent(this.studentId, formData)
+            .updateStudent(+this.studentId, formData)
             .subscribe({
               next: (response: any) => {
-                Swal.fire({
-                  icon: 'success',
-                  title: 'Student Updated',
-                  text: 'Student updated successfully!',
-                  confirmButtonText: 'OK',
-                }).then(() => {
-                  this.activeModal.close(response);
-                  this.studentUpdated.emit(response);
-                });
+                this.alertService
+                  .success('Student updated successfully!', 'Student Updated')
+                  .then(() => {
+                    this.activeModal.close(response);
+                    this.studentUpdated.emit(response);
+                  });
               },
               error: (error: any) => {
                 if (error.error.message == 'Email already exists') {
-                  Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'Email already exists',
-                    confirmButtonText: 'OK',
-                  });
+                  this.alertService.error('Email already exists', 'Error');
                 }
               },
             });
@@ -169,24 +164,16 @@ export class StudentModalComponent {
       } else {
         this.studentService.createStudent(formData).subscribe({
           next: (response: any) => {
-            Swal.fire({
-              icon: 'success',
-              title: 'Student Created',
-              text: 'Student created successfully!',
-              confirmButtonText: 'OK',
-            }).then(() => {
-              this.activeModal.close(response);
-              this.studentAdded.emit(response);
-            });
+            this.alertService
+              .success('Student created successfully!', 'Student Created')
+              .then(() => {
+                this.activeModal.close(response);
+                this.studentAdded.emit(response);
+              });
           },
           error: (error: any) => {
             if (error.error.message == 'Email already exists') {
-              Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: 'Email already exists',
-                confirmButtonText: 'OK',
-              });
+              this.alertService.error('Email already exists', 'Error');
             }
           },
         });

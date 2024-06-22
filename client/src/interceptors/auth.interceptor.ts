@@ -2,11 +2,12 @@ import { HttpInterceptorFn } from '@angular/common/http';
 import { AuthService } from '../services/auth.service';
 import { inject } from '@angular/core';
 import { catchError, throwError } from 'rxjs';
-import Swal from 'sweetalert2/dist/sweetalert2.js';
+import { AlertService } from '../services/alert.service';
 
 export const AuthInterceptor: HttpInterceptorFn = (req, next) => {
   let token: string | null = null;
   const authService = inject(AuthService);
+  const alertService = inject(AlertService);
   if (localStorage.getItem('token') !== null)
     token = localStorage.getItem('token');
 
@@ -28,20 +29,18 @@ export const AuthInterceptor: HttpInterceptorFn = (req, next) => {
   return next(modifiedReq).pipe(
     catchError((error) => {
       if (error.status === 401) {
-        Swal.fire({
-          title: 'Hold on!',
-          text: 'Session is expired. Do you want to refresh the session?',
-          icon: 'question',
-          confirmButtonText: 'Yes',
-          cancelButtonText: 'No',
-          showCancelButton: true,
-        }).then((result) => {
-          if (result.isConfirmed) {
-            authService.refreshToken();
-          } else {
-            authService.logout();
-          }
-        });
+        alertService
+          .question(
+            'Session is expired. Do you want to refresh the session?',
+            'Hold on!'
+          )
+          .then((result) => {
+            if (result.isConfirmed) {
+              authService.refreshToken();
+            } else {
+              authService.logout();
+            }
+          });
       }
       return throwError(error);
     })

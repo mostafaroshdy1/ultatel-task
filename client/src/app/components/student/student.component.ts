@@ -1,31 +1,33 @@
 import { CommonModule } from '@angular/common';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { StudentModalComponent } from '../student-modal/student-modal.component';
 import { StudentService } from '../../../services/student.service';
-import Swal from 'sweetalert2';
 import { AgePipe } from '../../../pipes/age.pipe';
-import { catchError, finalize, last, of } from 'rxjs';
+import { catchError, finalize, of } from 'rxjs';
 import { AuthService } from '../../../services/auth.service';
+import { AlertService } from '../../../services/alert.service';
+import { Student } from '../../../interfaces/student.interface';
+import { FilterStudent } from '../../../interfaces/filterStudent.interface';
+import { Country } from '../../../interfaces/country.interface';
 
 @Component({
   selector: 'app-home',
   standalone: true,
   imports: [NgSelectModule, CommonModule, FormsModule, AgePipe],
-  providers: [StudentService],
+  providers: [StudentService, AlertService],
   templateUrl: './student.component.html',
   styleUrl: './student.component.css',
 })
 export class StudentComponent {
-  selectedCountry: any;
-  selectedGender: any;
-  selectedEntry: any;
-  countries: any[] = [];
-  students: any[] = [];
+  selectedCountry: string | null = null;
+  selectedGender: string | null = null;
+  selectedEntry: number = 10;
+  countries: Country[] = [];
+  students: Student[] = [];
   filteredStudents: any[] = [];
   currentPage: number = 1;
   totalPages: number = 0;
@@ -38,7 +40,7 @@ export class StudentComponent {
   selectedName: string = '';
   selectedMinAge: number | null = null;
   selectedMaxAge: number | null = null;
-  filter: any = this.defaultFilter;
+  filter: FilterStudent = this.defaultFilter;
   totalEntries: number = 0;
 
   genders = [
@@ -54,10 +56,11 @@ export class StudentComponent {
   ];
 
   constructor(
-    private http: HttpClient,
-    private studentService: StudentService,
-    private modalService: NgbModal,
-    private authService: AuthService
+    private readonly http: HttpClient,
+    private readonly studentService: StudentService,
+    private readonly modalService: NgbModal,
+    private readonly authService: AuthService,
+    private readonly alertService: AlertService
   ) {}
 
   ngOnInit() {
@@ -100,7 +103,7 @@ export class StudentComponent {
     return Array.from({ length: this.totalPages }, (_, i) => i + 1);
   }
 
-  fetchStudents(filters: any) {
+  fetchStudents(filters: FilterStudent) {
     this.studentService.getAllStudents(filters).subscribe({
       next: (data: any) => {
         this.students = data.result;
@@ -117,18 +120,13 @@ export class StudentComponent {
   }
 
   logout() {
-    Swal.fire({
-      title: 'Are you sure?',
-      text: `You are about to Logout`,
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'Yes, Logout!',
-      cancelButtonText: 'Cancel',
-    }).then((result: any) => {
-      if (result.isConfirmed) {
-        this.authService.logout();
-      }
-    });
+    this.alertService
+      .warn('You are about to Logout', 'Are you sure?')
+      .then((result: any) => {
+        if (result.isConfirmed) {
+          this.authService.logout();
+        }
+      });
   }
 
   // this is automatically called when onEntriesClear is called
@@ -139,7 +137,6 @@ export class StudentComponent {
       limit: this.pageSize,
       offset: this.pageSize * (this.currentPage - 1),
     };
-
     this.goToFirstPage();
   }
 
@@ -200,6 +197,7 @@ export class StudentComponent {
   }
 
   searchStudents() {
+    console.log(this.selectedCountry);
     this.filter = {
       limit: this.pageSize,
       offset: this.pageSize * (this.currentPage - 1),
@@ -229,19 +227,17 @@ export class StudentComponent {
     return Math.min(this.currentPage * this.pageSize, this.totalEntries);
   }
 
-  confirmDelete(student: any) {
-    Swal.fire({
-      title: 'Are you sure?',
-      text: `You are about to delete ${student.name}.`,
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'Yes, delete it!',
-      cancelButtonText: 'Cancel',
-    }).then((result: any) => {
-      if (result.isConfirmed) {
-        this.deleteStudent(student.id);
-      }
-    });
+  confirmDelete(student: Student) {
+    this.alertService
+      .warn(
+        `You are about to delete ${student.firstName} ${student.lastName}.`,
+        'Are you sure?'
+      )
+      .then((result: any) => {
+        if (result.isConfirmed) {
+          this.deleteStudent(student.id);
+        }
+      });
   }
 
   deleteStudent(studentId: number): void {
@@ -249,8 +245,7 @@ export class StudentComponent {
       .deleteStudent(studentId)
       .pipe(
         catchError((error) => {
-          console.error('Error deleting student:', error);
-          Swal.fire('Error!', 'Failed to delete the student.', 'error');
+          this.alertService.error('Failed to delete the student.', 'Error!');
           return of(null);
         }),
         finalize(() => {
@@ -258,11 +253,11 @@ export class StudentComponent {
         })
       )
       .subscribe(() => {
-        Swal.fire('Deleted!', 'The student has been deleted.', 'success');
+        this.alertService.success('The student has been deleted.', 'Deleted!');
       });
   }
 
-  openAddEditModal(isAddMode: boolean, student?: any) {
+  openAddEditModal(isAddMode: boolean, student?: Student) {
     const modalRef = this.modalService.open(StudentModalComponent, {
       size: 'lg',
     });
@@ -270,6 +265,7 @@ export class StudentComponent {
     modalRef.componentInstance.modalTitle = isAddMode
       ? 'Add Student'
       : 'Edit Student';
+
     modalRef.componentInstance.student = student ? { ...student } : {};
 
     modalRef.componentInstance.studentUpdated.subscribe({
