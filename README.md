@@ -11,6 +11,7 @@ https://github.com/mostafaroshdy1/ultatel-task/assets/66712535/b4a91fee-06ab-488
 - Applied repo/service design pattern with layered architecture in nestjs for clean code
 - Implemented google ReCaptcha V2 to improve security against spams
 - Password Reset feature
+  
 
 ## Live Demo
 

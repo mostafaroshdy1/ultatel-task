@@ -49,7 +49,7 @@ export class ForgotPasswordComponent {
             this.alertService
               .success(
                 'Please check your email for further instructions.',
-                "'Password Reset Link Sent!'"
+                'Password Reset Link Sent!'
               )
               .then((result) => {
                 if (result.isConfirmed) {
