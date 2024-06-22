@@ -43,8 +43,8 @@ export class StudentController {
   @ApiOkResponse({ type: CreateStudentDto })
   @ApiTags('student')
   @Get(':id')
-  async findOne(@Param('id') id: string) {
-    const student = await this.studentService.findOne(+id);
+  async findOne(@Param('id') id: number) {
+    const student = await this.studentService.findOne(id);
     if (!student) {
       throw new NotFoundException('Student not found');
     }
@@ -56,17 +56,17 @@ export class StudentController {
   @ApiTags('student')
   @Patch(':id')
   async update(
-    @Param('id') id: string,
+    @Param('id') id: number,
     @Body() updateStudentDto: UpdateStudentDto,
   ) {
-    return this.studentService.update(+id, updateStudentDto);
+    return this.studentService.update(id, updateStudentDto);
   }
 
   @UseGuards(AuthGuard)
   @ApiOkResponse({ type: CreateStudentDto })
   @ApiTags('student')
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.studentService.remove(+id);
+  remove(@Param('id') id: number) {
+    return this.studentService.remove(id);
   }
 }
